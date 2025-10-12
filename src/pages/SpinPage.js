@@ -153,39 +153,6 @@ const SpinPage = () => {
       {!isLoading && !hasError && wheel ? (
         <>
           <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                  {wheel.title || "Koło bez nazwy"}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Liczba pól: {slices.length}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-                <CopyToClipboardButton value={shareUrl} onError={setCopyError} />
-                {copyError ? (
-                  <span className="text-xs font-medium text-rose-600 dark:text-rose-400">{copyError}</span>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {slices.map((slice) => (
-                <div
-                  key={slice.id}
-                  className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800/60"
-                >
-                  <span
-                    className="h-4 w-4 rounded-full border border-slate-200"
-                    style={{ backgroundColor: slice.color }}
-                    aria-hidden
-                  />
-                  <span className="truncate text-sm text-slate-700 dark:text-slate-200">{slice.label}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div className="relative mx-auto flex h-[360px] w-[360px] max-w-full items-center justify-center">
               <div
                 className="relative h-full w-full rounded-full shadow-lg transition-transform duration-[4500ms] ease-out"
@@ -199,9 +166,9 @@ const SpinPage = () => {
                   if (!sliceAngle) {
                     return null;
                   }
-                  const centerAngle = -90 + index * sliceAngle;
+                  const centerAngle = -90 + index * sliceAngle + sliceAngle / 2;
                   const radians = (centerAngle * Math.PI) / 180;
-                  const radiusPercent = 38;
+                  const radiusPercent = 40;
                   const x = 50 + radiusPercent * Math.cos(radians);
                   const y = 50 + radiusPercent * Math.sin(radians);
                   return (
@@ -250,6 +217,39 @@ const SpinPage = () => {
                   Poczekaj na koniec losowania!
                 </p>
               )}
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                  {wheel.title || "Koło bez nazwy"}
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Liczba pól: {slices.length}</p>
+              </div>
+              <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
+                <CopyToClipboardButton value={shareUrl} onError={setCopyError} />
+                {copyError ? (
+                  <span className="text-xs font-medium text-rose-600 dark:text-rose-400">{copyError}</span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {slices.map((slice) => (
+                <div
+                  key={slice.id}
+                  className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800/60"
+                >
+                  <span
+                    className="h-4 w-4 rounded-full border border-slate-200"
+                    style={{ backgroundColor: slice.color }}
+                    aria-hidden
+                  />
+                  <span className="truncate text-sm text-slate-700 dark:text-slate-200">{slice.label}</span>
+                </div>
+              ))}
             </div>
           </section>
         </>

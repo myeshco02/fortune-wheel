@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import backgroundImage from "../background-fortune.webp";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -37,13 +38,27 @@ const HomePage = () => {
   };
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col items-center justify-center gap-8 py-16 text-center">
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">Witaj w najlepszym Kole Fortuny!</h1>
-        <p className="text-slate-600 dark:text-slate-300">
-          Stwórz własne koło fortuny, zapisz konfigurację i podziel się nią z innymi.
-        </p>
-      </div>
+    <div
+      className="relative isolate flex min-h-[calc(100vh-12rem)] w-full items-center justify-center overflow-hidden rounded-3xl border border-slate-200 text-center shadow-xl dark:border-slate-800"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-white/82 backdrop-blur-[2px] dark:bg-slate-950/75" aria-hidden />
+      <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center gap-8 px-6 py-20">
+        <div
+          className="space-y-4 text-white"
+          style={{
+            textShadow: "0 10px 24px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.65)",
+          }}
+        >
+          <h1 className="text-4xl font-bold">Witaj w najlepszym Kole Fortuny!</h1>
+          <p className="text-base md:text-lg">
+            Stwórz własne koło fortuny, zapisz konfigurację i podziel się nią z innymi.
+          </p>
+        </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Link
@@ -79,6 +94,7 @@ const HomePage = () => {
         </div>
         {error ? <p className="text-sm text-rose-500">{error}</p> : null}
       </form>
+      </div>
     </div>
   );
 };

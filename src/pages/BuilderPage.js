@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { FiPlus } from "react-icons/fi";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
 import { createWheel } from "../firebase";
 
@@ -161,21 +162,11 @@ const BuilderPage = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Pola koła</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Liczba pól: {slices.length} / {MAX_SLICES}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddSlice}
-                disabled={slices.length >= MAX_SLICES}
-                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
-                Dodaj pole
-              </button>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Pola koła</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Liczba pól: {slices.length} / {MAX_SLICES}
+              </p>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -225,6 +216,21 @@ const BuilderPage = () => {
                   </div>
                 );
               })}
+            </div>
+
+            <div className="flex items-center justify-start pt-2">
+              <button
+                type="button"
+                onClick={handleAddSlice}
+                disabled={slices.length >= MAX_SLICES}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-white shadow transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                <FiPlus className="h-6 w-6" aria-hidden />
+                <span className="sr-only">Dodaj pole</span>
+              </button>
+              <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">
+                Dodaj nowe pole (max {MAX_SLICES}).
+              </span>
             </div>
           </div>
         </div>

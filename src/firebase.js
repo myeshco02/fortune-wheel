@@ -1,4 +1,12 @@
 import { initializeApp } from "firebase/app";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  serverTimestamp,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPvElPY0NlI9rW2KaeAPkAIoKBhYE2wWs",
@@ -10,5 +18,35 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
+const wheelsCollection = collection(db, "wheels");
+
+export const createWheel = async ({ title, slices }) => {
+  const sanitizedSlices = slices.map((slice) => ({
+    label: slice.label.trim(),
+    color: slice.color,
+    id: slice.id,
+  }));
+
+  const payload = {
+    title: title?.trim() || null,
+    slices: sanitizedSlices,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  const result = await addDoc(wheelsCollection, payload);
+  return result.id;
+};
+
+export const getWheel = async (id) => {
+  const snapshot = await getDoc(doc(db, "wheels", id));
+  if (!snapshot.exists()) {
+    return null;
+  }
+  return { id: snapshot.id, ...snapshot.data() };
+};
+
+export { db };
 export default app;

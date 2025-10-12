@@ -1,70 +1,117 @@
-# Getting Started with Create React App
+# Fortune Wheel
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Personal web app for creating and sharing custom fortune wheels. Configure your own slices, save the wheel to Firestore, share the generated link/QR, and let everyone spin it in a dedicated view with confetti and animations.
+
+![Fortune Wheel preview](docs/screenshot.png) <!-- optional; remove if no screenshot -->
+
+## Features
+
+- 🎡 **Wheel Builder** – add between 2 and 16 slices, pick colors, rename and reorder.
+- ☁️ **Firebase integration** – wheels are stored in Firestore (`/wheels` collection).
+- 🔗 **Sharing tools** – instant link + copy-to-clipboard (QR ready for future use).
+- 🎉 **Spin mode** – smooth rotation, configurable randomness, confetti, clear winner highlight.
+- 🌙 **Light/dark theme** – global toggle with persistence in `localStorage`.
+- 🧭 **Routing** – React Router powered SPA with guarded 404 view.
+
+## Tech Stack
+
+- [React 19](https://react.dev/)
+- [React Router 7](https://reactrouter.com/)
+- [Tailwind CSS 3](https://tailwindcss.com/)
+- [Firebase (Firestore + Hosting)](https://firebase.google.com/)
+- [canvas-confetti](https://www.npmjs.com/package/canvas-confetti)
+- [react-icons](https://react-icons.github.io/react-icons/)
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Firebase setup
+
+1. Create a Firebase project (this repo uses `fortune-82366`).
+2. Enable **Firestore** in test mode (or adjust rules).
+3. Paste your Web config in `src/firebase.js` (already filled in for the original project).
+4. Optional: update Firestore rules for read-only wheels:
+
+```js
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /wheels/{id} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+  }
+}
+```
+
+### 3. Run locally
+
+```bash
+npm start
+```
+
+Visit `http://localhost:3000`. The app hot-reloads on changes.
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+Outputs optimized static assets in the `build/` directory.
+
+## Deployment (Firebase Hosting)
+
+1. Install CLI & log in (one time):
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+2. Initialize hosting in the project root:
+   ```bash
+   firebase init hosting
+   # public directory: build
+   # single-page app rewrite: Yes
+   # GitHub deploys: optional
+   ```
+3. Deploy:
+   ```bash
+   npm run build
+   firebase deploy --only hosting
+   ```
+
+The project ships at `https://<project-id>.web.app`.
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start` – start dev server.
+- `npm run build` – create production bundle.
+- `npm test` – CRA default test runner.
+- `npm run eject` – expose CRA configs (irreversible).
 
-### `npm start`
+## Project structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+src/
+├─ components/      # shared header, footer, clipboard button, etc.
+├─ pages/           # Home, Builder, Spin, NotFound views
+├─ firebase.js      # Firebase app + Firestore helpers
+└─ index.js         # entry point (BrowserRouter, ReactDOM)
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Roadmap / Ideas
 
-### `npm test`
+- QR code generation after saving wheel.
+- Wheel duplication flow.
+- Analytics (spin counts per wheel).
+- Service worker + offline mode.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## License
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT © 2025 Mieszko Iwaniec

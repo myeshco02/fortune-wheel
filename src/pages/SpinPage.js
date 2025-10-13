@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import confetti from "canvas-confetti";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
+import WheelLabels from "../components/WheelLabels";
 import { getWheel, verifyEditKey } from "../firebase";
 
 const SPIN_DURATION = 4500;
@@ -87,12 +88,12 @@ const SpinPage = () => {
 
   const sliceAngle = useMemo(() => (slices.length ? 360 / slices.length : 0), [slices.length]);
 
+  const startAngle = useMemo(() => -sliceAngle / 2, [sliceAngle]);
   const gradientBackground = useMemo(() => {
     if (!slices.length) {
       return "#E2E8F0";
     }
 
-    const startOffset = -90 - sliceAngle / 2;
     const segments = slices
       .map((slice, index) => {
         const from = index * sliceAngle;
@@ -101,24 +102,24 @@ const SpinPage = () => {
       })
       .join(", ");
 
-    return `conic-gradient(from ${startOffset}deg, ${segments})`;
-  }, [slices, sliceAngle]);
+    return `conic-gradient(from ${startAngle}deg, ${segments})`;
+  }, [slices, sliceAngle, startAngle]);
 
   const shareUrl = useMemo(() => `${window.location.origin}/spin/${id}`, [id]);
 
+  const wheelRadius = useMemo(() => wheelSize / 2, [wheelSize]);
   const labelFontSize = useMemo(() => {
     if (!slices.length) {
-      return "0.75rem";
+      return "12px";
     }
-    const minSize = 0.5;
-    const maxSize = 0.8;
     const clamped = Math.min(Math.max(slices.length, 2), 16);
     const ratio = (16 - clamped) / 14;
-    const size = minSize + (maxSize - minSize) * ratio;
-    return `${size.toFixed(2)}rem`;
-  }, [slices.length]);
-  const wheelRadius = useMemo(() => wheelSize / 2, [wheelSize]);
-  const labelOffset = useMemo(() => Math.max(wheelRadius - 60, wheelRadius * 0.45), [wheelRadius]);
+    const minPx = Math.max(10, wheelRadius * 0.045);
+    const maxPx = Math.max(14, wheelRadius * 0.085);
+    const sizePx = minPx + (maxPx - minPx) * ratio;
+    return `${sizePx.toFixed(1)}px`;
+  }, [slices.length, wheelRadius]);
+  const labelRadius = useMemo(() => Math.max(wheelRadius * 0.45, wheelRadius - 56), [wheelRadius]);
 
   const handleSpin = () => {
     if (!slices.length || isSpinning) {
@@ -231,40 +232,23 @@ const SpinPage = () => {
           <section className="rounded-2xl border border-slate-100 bg-white px-6 pb-6 pt-12 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div ref={wheelContainerRef} className="relative mx-auto aspect-square w-full max-w-[360px]">
               <div
-                className="relative h-full w-full rounded-full shadow-lg transition-transform duration-[4500ms] ease-out"
+                className="relative h-full w-full rounded-full border-[3px] border-white/80 shadow-lg transition-transform duration-[4500ms] ease-out"
                 style={{
                   background: gradientBackground,
                   transform: `rotate(${rotation}deg)`,
                 }}
               >
+                <WheelLabels
+                  slices={slices}
+                  sliceAngle={sliceAngle}
+                  startAngle={startAngle}
+                  size={wheelSize}
+                  radius={Math.max(labelRadius, 0)}
+                  fontSize={labelFontSize}
+                />
                 <div className="absolute inset-6 rounded-full border border-white/30 bg-white/10 blur-sm" />
-                {slices.map((slice, index) => {
-                  if (!sliceAngle) {
-                    return null;
-                  }
-
-                  const angleDeg = -90 + index * sliceAngle + sliceAngle / 2;
-
-                  return (
-                    <div
-                      key={slice.id}
-                      className="pointer-events-none absolute left-1/2 top-1/2"
-                      style={{ transform: `translate(-50%, -50%) rotate(${angleDeg}deg)` }}
-                    >
-                      <span
-                        className="inline-flex max-w-[150px] select-none items-center justify-center rounded-full bg-slate-900/60 px-3 py-1 text-center font-semibold uppercase tracking-tight text-white shadow-[0_6px_18px_rgba(15,23,42,0.65)] backdrop-blur"
-                        style={{
-                          transform: `translateX(${labelOffset}px) translateY(-50%)`,
-                          transformOrigin: "0% 50%",
-                          textShadow: "0 1px 8px rgba(15, 23, 42, 0.8)",
-                          fontSize: labelFontSize,
-                        }}
-                      >
-                        {slice.label}
-                      </span>
-                    </div>
-                  );
-                })}
+                <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-inner shadow-white/40" />
+                <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500 shadow-sm shadow-rose-400/60" />
               </div>
               <div className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-5 flex flex-col items-center">
                 <span className="-rotate-180" aria-hidden>

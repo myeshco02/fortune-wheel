@@ -18,6 +18,8 @@ const SpinPage = () => {
   const [winner, setWinner] = useState(null);
   const [copyError, setCopyError] = useState(null);
   const spinTimeoutRef = useRef(null);
+  const wheelContainerRef = useRef(null);
+  const [wheelSize, setWheelSize] = useState(360);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,6 +65,18 @@ const SpinPage = () => {
     []
   );
 
+  useEffect(() => {
+    const updateSize = () => {
+      if (wheelContainerRef.current) {
+        setWheelSize(wheelContainerRef.current.offsetWidth);
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
   const slices = useMemo(() => wheel?.slices ?? [], [wheel]);
 
   const sliceAngle = useMemo(() => (slices.length ? 360 / slices.length : 0), [slices.length]);
@@ -85,6 +99,20 @@ const SpinPage = () => {
   }, [slices, sliceAngle]);
 
   const shareUrl = useMemo(() => `${window.location.origin}/spin/${id}`, [id]);
+
+  const labelFontSize = useMemo(() => {
+    if (!slices.length) {
+      return "0.75rem";
+    }
+    const minSize = 0.5;
+    const maxSize = 0.8;
+    const clamped = Math.min(Math.max(slices.length, 2), 16);
+    const ratio = (16 - clamped) / 14;
+    const size = minSize + (maxSize - minSize) * ratio;
+    return `${size.toFixed(2)}rem`;
+  }, [slices.length]);
+  const wheelRadius = useMemo(() => wheelSize / 2, [wheelSize]);
+  const labelOffset = useMemo(() => Math.max(wheelRadius - 60, wheelRadius * 0.45), [wheelRadius]);
 
   const handleSpin = () => {
     if (!slices.length || isSpinning) {
@@ -153,7 +181,7 @@ const SpinPage = () => {
       {!isLoading && !hasError && wheel ? (
         <>
           <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div className="relative mx-auto flex h-[360px] w-[360px] max-w-full items-center justify-center">
+            <div ref={wheelContainerRef} className="relative mx-auto aspect-square w-full max-w-[360px]">
               <div
                 className="relative h-full w-full rounded-full shadow-lg transition-transform duration-[4500ms] ease-out"
                 style={{
@@ -166,24 +194,23 @@ const SpinPage = () => {
                   if (!sliceAngle) {
                     return null;
                   }
-                  const centerAngle = -90 + index * sliceAngle + sliceAngle / 2;
-                  const radians = (centerAngle * Math.PI) / 180;
-                  const radiusPercent = 40;
-                  const x = 50 + radiusPercent * Math.cos(radians);
-                  const y = 50 + radiusPercent * Math.sin(radians);
+
+                  const angleDeg = -90 + index * sliceAngle + sliceAngle / 2;
+
                   return (
                     <div
                       key={slice.id}
-                      className="absolute flex max-w-[55%] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-                      style={{
-                        left: `${x}%`,
-                        top: `${y}%`,
-                        transform: `translate(-50%, -50%) rotate(${ -centerAngle }deg)`,
-                      }}
+                      className="pointer-events-none absolute left-1/2 top-1/2"
+                      style={{ transform: `translate(-50%, -50%) rotate(${angleDeg}deg)` }}
                     >
                       <span
-                        className="inline-block max-w-full truncate rounded-full bg-slate-900/70 px-2 py-1 text-[0.7rem] font-semibold text-white shadow-[0_2px_12px_rgba(15,23,42,0.55)] backdrop-blur"
-                        style={{ textShadow: "0 1px 4px rgba(15, 23, 42, 0.75)" }}
+                        className="inline-flex max-w-[150px] select-none items-center justify-center rounded-full bg-slate-900/60 px-3 py-1 text-center font-semibold uppercase tracking-tight text-white shadow-[0_6px_18px_rgba(15,23,42,0.65)] backdrop-blur"
+                        style={{
+                          transform: `translateX(${labelOffset}px) translateY(-50%)`,
+                          transformOrigin: "0% 50%",
+                          textShadow: "0 1px 8px rgba(15, 23, 42, 0.8)",
+                          fontSize: labelFontSize,
+                        }}
                       >
                         {slice.label}
                       </span>

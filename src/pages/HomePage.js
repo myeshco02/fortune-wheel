@@ -81,7 +81,7 @@ const HomePage = () => {
             id="wheel-link"
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
-            placeholder="https://twoja-strona/spin/abc123"
+            placeholder="https://fortune-82366.web.app/spin/xyz123"
             className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-base shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             autoComplete="off"
           />

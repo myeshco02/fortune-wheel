@@ -141,9 +141,7 @@ const BuilderPage = () => {
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Kreator koła</h1>
         <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Każde zapisane koło tworzy nową konfigurację.</p>
-        <p className="text-slate-600 dark:text-slate-400">
-          Dodaj między {MIN_SLICES} a {MAX_SLICES} pól, nadaj im nazwy i kolory. Zapis tworzy udostępnialny link.
-        </p>
+        
       </header>
 
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
@@ -286,7 +284,17 @@ const BuilderPage = () => {
                 readOnly
                 className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 shadow-sm focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               />
-              <CopyToClipboardButton value={shareInfo.shareUrl} onError={(msg) => setSaveError(msg)} />
+              <div className="flex items-center gap-2">
+                <CopyToClipboardButton value={shareInfo.shareUrl} onError={(msg) => setSaveError(msg)} />
+                <a
+                  href={shareInfo.shareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-10 items-center justify-center rounded-lg border border-indigo-200 px-4 text-sm font-medium text-indigo-600 transition hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-600 dark:text-indigo-300 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
+                >
+                  Otwórz w nowej karcie
+                </a>
+              </div>
             </div>
           </div>
         </section>

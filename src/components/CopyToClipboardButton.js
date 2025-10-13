@@ -37,21 +37,24 @@ const CopyToClipboardButton = ({
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`relative inline-flex items-center ${className}`}>
+      <span
+        className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap text-xs font-medium text-slate-500 transition-all duration-200 ${
+          copied ? "translate-x-0 opacity-100" : "translate-x-2 opacity-0"
+        } ${successClassName}`}
+      >
+        {successText}
+      </span>
       <button
         type="button"
         onClick={handleCopy}
-        title={copied ? successText : ariaLabel}
-        aria-label={copied ? successText : ariaLabel}
-        className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition hover:border-indigo-300 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:hover:border-indigo-400 dark:hover:text-indigo-200 ${
-          copied
-            ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-300"
-            : "border-indigo-200 text-indigo-600 dark:border-slate-600 dark:text-indigo-300"
-        }`}
+        aria-label={ariaLabel}
+        title={ariaLabel}
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-indigo-200 text-indigo-600 transition hover:border-indigo-300 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:border-slate-600 dark:text-indigo-300 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
       >
-        {copied ? <FiCheck className="h-5 w-5" /> : <FiClipboard className="h-5 w-5" />}
+        <FiClipboard className={`absolute h-5 w-5 transition-opacity duration-200 ${copied ? "opacity-0" : "opacity-100"}`} />
+        <FiCheck className={`absolute h-5 w-5 text-emerald-500 transition-opacity duration-200 ${copied ? "opacity-100" : "opacity-0"}`} />
       </button>
-      {copied ? <span className={successClassName}>{successText}</span> : null}
     </div>
   );
 };

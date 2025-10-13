@@ -435,37 +435,63 @@ const BuilderPage = () => {
 
       {shareInfo ? (
         <section className="rounded-2xl border border-indigo-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("builder.success.title")}</h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {t(`builder.success.${shareInfo.mode === "create" ? "create" : "edit"}`)}
-          </p>
-          <div className="mt-4 space-y-3">
-            <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">
-              <span className="font-medium text-slate-700 dark:text-slate-200">{t("builder.success.wheelId")}</span> {shareInfo.id}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("builder.success.title")}</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                {t(`builder.success.${shareInfo.mode === "create" ? "create" : "edit"}`)}
+              </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <input
-                value={shareInfo.shareUrl}
-                readOnly
-                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 shadow-sm focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-              />
-              <div className="flex items-center gap-2">
+            {shareInfo.shareUrl ? (
+              <a
+                href={shareInfo.shareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-indigo-200 px-5 text-sm font-medium text-indigo-600 transition hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-600 dark:text-indigo-300 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
+              >
+                {t("builder.openInNewTab")}
+              </a>
+            ) : null}
+          </div>
+          <div className="mt-6 space-y-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {t("builder.success.wheelId")}
+              </span>
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <input
+                  value={shareInfo.id}
+                  readOnly
+                  className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm focus:outline-none dark:border-slate-600 dark:bg-slate-950 dark:text-slate-200"
+                />
                 <CopyToClipboardButton
-                  value={shareInfo.shareUrl}
-                  successText={t("builder.success.shareLinkCopied")}
-                  ariaLabel={t("builder.success.clipboardAria.share")}
+                  value={shareInfo.id}
+                  successText={t("builder.success.wheelIdCopied")}
+                  ariaLabel={t("builder.success.clipboardAria.wheelId")}
                   onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
                 />
-                <a
-                  href={shareInfo.shareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-10 items-center justify-center rounded-lg border border-indigo-200 px-4 text-sm font-medium text-indigo-600 transition hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-600 dark:text-indigo-300 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
-                >
-                  {t("builder.openInNewTab")}
-                </a>
               </div>
             </div>
+            {shareInfo.shareUrl ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {t("builder.success.shareLink")}
+                </span>
+                <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <input
+                    value={shareInfo.shareUrl}
+                    readOnly
+                    className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:outline-none dark:border-slate-600 dark:bg-slate-950 dark:text-slate-200"
+                  />
+                  <CopyToClipboardButton
+                    value={shareInfo.shareUrl}
+                    successText={t("builder.success.shareLinkCopied")}
+                    ariaLabel={t("builder.success.clipboardAria.share")}
+                    onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
+                  />
+                </div>
+              </div>
+            ) : null}
             {shareInfo.editKey ? (
               <div className="flex flex-col gap-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-4 text-sm text-slate-700 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-slate-200 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
@@ -480,27 +506,6 @@ const BuilderPage = () => {
                     value={shareInfo.editKey}
                     ariaLabel={t("builder.success.clipboardAria.editKey")}
                     successText={t("builder.success.editKeyCopied")}
-                    onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
-                  />
-                </div>
-              </div>
-            ) : null}
-            {shareInfo.editUrl ? (
-              <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{t("builder.success.editLink")}</span>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{t("builder.success.editLinkHint")}</p>
-                </div>
-                <div className="flex w-full max-w-md items-center gap-3">
-                  <input
-                    value={shareInfo.editUrl}
-                    readOnly
-                    className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-sm focus:outline-none dark:border-slate-700 dark:bg-slate-900"
-                  />
-                  <CopyToClipboardButton
-                    value={shareInfo.editUrl}
-                    ariaLabel={t("builder.success.clipboardAria.editLink")}
-                    successText={t("builder.success.editLinkCopied")}
                     onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
                   />
                 </div>

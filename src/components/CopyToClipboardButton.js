@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FiCheck, FiClipboard } from "react-icons/fi";
+import { useNotification } from "./NotificationProvider";
 
 const CopyToClipboardButton = ({
   value,
@@ -7,15 +8,15 @@ const CopyToClipboardButton = ({
   successText = "Skopiowano do schowka",
   ariaLabel = "Kopiuj link",
   className = "",
-  successClassName = "text-xs font-medium text-emerald-600 dark:text-emerald-400",
 }) => {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef(null);
+  const { showNotification } = useNotification();
 
   useEffect(
     () => () => {
       if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+        clearTimeout(timeoutRef.current);
       }
     },
     []
@@ -26,10 +27,11 @@ const CopyToClipboardButton = ({
       await navigator.clipboard.writeText(value);
       setCopied(true);
       onError?.(null);
+      showNotification(successText);
       if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+        clearTimeout(timeoutRef.current);
       }
-      timeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
+      timeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error(error);
       onError?.("Nie udało się skopiować linku do schowka.");
@@ -38,13 +40,6 @@ const CopyToClipboardButton = ({
 
   return (
     <div className={`relative inline-flex items-center ${className}`}>
-      <span
-        className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap text-xs font-medium text-slate-500 transition-all duration-200 ${
-          copied ? "translate-x-0 opacity-100" : "translate-x-2 opacity-0"
-        } ${successClassName}`}
-      >
-        {successText}
-      </span>
       <button
         type="button"
         onClick={handleCopy}

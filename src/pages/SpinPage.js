@@ -267,13 +267,10 @@ const SpinPage = () => {
                 })}
               </div>
               <div className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-5 flex flex-col items-center">
-                <span
-                  className="relative block h-0 w-0"
-                  aria-hidden
-                  style={{ filter: "drop-shadow(0 0 0 rgba(255,255,255,0.9)) drop-shadow(0 6px 12px rgba(15,23,42,0.35))" }}
-                >
-                  <span className="absolute left-1/2 top-1/2 block h-0 w-0 -translate-x-1/2 -translate-y-1/2 rotate-180 border-l-[18px] border-r-[18px] border-b-[34px] border-l-transparent border-r-transparent border-b-white" />
-                  <span className="relative block h-0 w-0 rotate-180 border-l-[16px] border-r-[16px] border-b-[32px] border-l-transparent border-r-transparent border-b-rose-500" />
+                <span className="-rotate-180" aria-hidden>
+                  <svg width="40" height="40" viewBox="0 0 40 40" className="block">
+                    <path d="M20 0 L40 40 H0 Z" fill="#f43f5e" stroke="white" strokeWidth="4" strokeLinejoin="round" />
+                  </svg>
                 </span>
               </div>
               <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-gradient-to-br from-indigo-100 via-slate-50 to-amber-50 opacity-50" />

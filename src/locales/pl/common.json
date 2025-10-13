@@ -79,10 +79,13 @@
       "editKeyHint": "Zachowaj go w bezpiecznym miejscu. Tylko osoby posiadające ten klucz mogą modyfikować koło.",
       "editLink": "Link do edycji:",
       "editLinkHint": "Otwiera kreator z wypełnionym kołem i kluczem edycji w adresie.",
+      "wheelIdCopied": "ID skopiowane",
       "editKeyCopied": "Klucz skopiowany",
       "editLinkCopied": "Link skopiowany",
       "shareLinkCopied": "Link skopiowany",
+      "shareLink": "Link do zakręcenia",
       "clipboardAria": {
+        "wheelId": "Kopiuj ID koła",
         "share": "Kopiuj link do zakręcenia",
         "editKey": "Kopiuj klucz edycji",
         "editLink": "Kopiuj link do edycji"

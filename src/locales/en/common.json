@@ -79,10 +79,13 @@
       "editKeyHint": "Store it in a safe place. Only people with this key can modify the wheel.",
       "editLink": "Edit link:",
       "editLinkHint": "Opens the builder with the wheel and edit key in the URL.",
+      "wheelIdCopied": "ID copied",
       "editKeyCopied": "Key copied",
       "editLinkCopied": "Link copied",
       "shareLinkCopied": "Link copied",
+      "shareLink": "Spin link",
       "clipboardAria": {
+        "wheelId": "Copy wheel ID",
         "share": "Copy spin link",
         "editKey": "Copy edit key",
         "editLink": "Copy edit link"

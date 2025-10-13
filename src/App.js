@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import BuilderPage from "./pages/BuilderPage";
 import SpinPage from "./pages/SpinPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import { NotificationProvider } from "./components/NotificationProvider";
 
 const getSystemTheme = () => {
   if (typeof window === "undefined" || !window.matchMedia) {
@@ -77,25 +78,27 @@ function App() {
   const setThemeMode = (mode) => setThemeState(applyThemeMode(mode));
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
-      <AppHeader
-        themeMode={themeState.mode}
-        appliedTheme={themeState.applied}
-        onSelectThemeMode={setThemeMode}
-      />
-      <main className="flex-1 px-4 py-8">
-        <div className="mx-auto w-full max-w-5xl space-y-8">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/builder" element={<BuilderPage />} />
-            <Route path="/spin/:id" element={<SpinPage />} />
-            <Route path="/not-found" element={<NotFoundPage />} />
-            <Route path="*" element={<Navigate to="/not-found" replace />} />
-          </Routes>
-        </div>
-      </main>
-      <AppFooter />
-    </div>
+    <NotificationProvider>
+      <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+        <AppHeader
+          themeMode={themeState.mode}
+          appliedTheme={themeState.applied}
+          onSelectThemeMode={setThemeMode}
+        />
+        <main className="flex-1 px-4 py-8">
+          <div className="mx-auto w-full max-w-5xl space-y-8">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/builder" element={<BuilderPage />} />
+              <Route path="/spin/:id" element={<SpinPage />} />
+              <Route path="/not-found" element={<NotFoundPage />} />
+              <Route path="*" element={<Navigate to="/not-found" replace />} />
+            </Routes>
+          </div>
+        </main>
+        <AppFooter />
+      </div>
+    </NotificationProvider>
   );
 }
 

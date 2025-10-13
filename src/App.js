@@ -78,7 +78,11 @@ function App() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
-      <AppHeader themeMode={themeState.mode} onSelectThemeMode={setThemeMode} />
+      <AppHeader
+        themeMode={themeState.mode}
+        appliedTheme={themeState.applied}
+        onSelectThemeMode={setThemeMode}
+      />
       <main className="flex-1 px-4 py-8">
         <div className="mx-auto w-full max-w-5xl space-y-8">
           <Routes>

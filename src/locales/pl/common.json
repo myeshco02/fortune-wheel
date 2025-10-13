@@ -121,5 +121,10 @@
         "generic": "Wystąpił błąd podczas weryfikacji klucza. Spróbuj ponownie."
       }
     }
+  },
+  "notFound": {
+    "title": "Nie znaleziono konfiguracji",
+    "description": "Wygląda na to, że wskazane koło fortuny nie istnieje lub wygasło.",
+    "back": "Wróć na stronę główną"
   }
 }

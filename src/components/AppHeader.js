@@ -8,9 +8,9 @@ import logo from "../logo.svg";
 const navLinkBase =
   "rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-200";
 const mobileNavLinkBase =
-  "block w-full rounded-lg px-3 py-3 text-base font-medium transition";
+  "block w-full rounded-lg px-3 py-3 text-base font-medium transition hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-200";
 
-const AppHeader = ({ themeMode, onSelectThemeMode }) => {
+const AppHeader = ({ themeMode, appliedTheme, onSelectThemeMode }) => {
   const { t, i18n } = useTranslation("common");
   const currentLang = i18n.language?.split("-")[0] || "pl";
   const normalizedLang = currentLang === "en" ? "en" : "pl";
@@ -23,12 +23,8 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
     { mode: "dark", label: t("header.darkMode"), icon: FiMoon },
     { mode: "system", label: t("header.systemMode"), icon: FiMonitor },
   ];
-  const themeIconMap = {
-    light: FiSun,
-    dark: FiMoon,
-    system: FiMonitor,
-  };
-  const ActiveThemeIcon = themeIconMap[themeMode] || FiSun;
+  const resolvedTheme = themeMode === "system" ? appliedTheme || "light" : themeMode;
+  const ActiveThemeIcon = resolvedTheme === "dark" ? FiMoon : FiSun;
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
   const [isMobileMenuMounted, setIsMobileMenuMounted] = useState(false);
@@ -229,15 +225,14 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
               aria-haspopup="listbox"
               aria-expanded={isLanguageMenuOpen}
               aria-label={t("header.toggleLanguage")}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               <FiGlobe className="h-4 w-4" aria-hidden />
-              {t(`lang.${normalizedLang}`)}
             </button>
             {isLanguageMenuOpen ? (
               <div
                 ref={languageMenuRef}
-                className="absolute right-0 mt-2 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+                className="absolute right-0 mt-2 w-40 space-y-1 rounded-lg border border-slate-200 bg-white px-1 py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
                 role="listbox"
                 tabIndex={-1}
               >
@@ -250,14 +245,13 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
                       role="option"
                       aria-selected={isActive}
                       onClick={() => handleLanguageSelect(language.code)}
-                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition hover:bg-indigo-50 dark:hover:bg-indigo-500/20 ${
+                      className={`flex w-full items-center rounded-md border px-3 py-2 text-left text-sm transition ${
                         isActive
-                          ? "font-semibold text-indigo-600 dark:text-indigo-300"
-                          : "text-slate-600 dark:text-slate-200"
+                          ? "border-indigo-200 bg-indigo-50 font-semibold text-indigo-700 dark:border-indigo-500/60 dark:bg-indigo-500/10 dark:text-indigo-200"
+                          : "border-transparent text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-transparent dark:text-slate-200 dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-100"
                       }`}
                     >
                       <span>{language.label}</span>
-                      {isActive ? <span aria-hidden>•</span> : null}
                     </button>
                   );
                 })}
@@ -272,15 +266,14 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
               aria-haspopup="listbox"
               aria-expanded={isThemeMenuOpen}
               aria-label={t("header.toggleTheme")}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               <ActiveThemeIcon className="h-4 w-4" aria-hidden />
-              {t(`header.${themeMode === "system" ? "systemMode" : themeMode === "dark" ? "darkMode" : "lightMode"}`)}
             </button>
             {isThemeMenuOpen ? (
               <div
                 ref={themeMenuRef}
-                className="absolute right-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+                className="absolute right-0 mt-2 w-48 space-y-1 rounded-lg border border-slate-200 bg-white px-1 py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
                 role="listbox"
                 tabIndex={-1}
               >
@@ -294,17 +287,14 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
                       role="option"
                       aria-selected={isActive}
                       onClick={() => handleThemeSelect(option.mode)}
-                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition hover:bg-indigo-50 dark:hover:bg-indigo-500/20 ${
+                      className={`flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm transition ${
                         isActive
-                          ? "font-semibold text-indigo-600 dark:text-indigo-300"
-                          : "text-slate-600 dark:text-slate-200"
+                          ? "border-indigo-200 bg-indigo-50 font-semibold text-indigo-700 dark:border-indigo-500/60 dark:bg-indigo-500/10 dark:text-indigo-200"
+                          : "border-transparent text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-transparent dark:text-slate-200 dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-100"
                       }`}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <OptionIcon className="h-4 w-4" aria-hidden />
-                        {option.label}
-                      </span>
-                      {isActive ? <span aria-hidden>•</span> : null}
+                      <OptionIcon className="h-4 w-4" aria-hidden />
+                      <span>{option.label}</span>
                     </button>
                   );
                 })}
@@ -394,14 +384,13 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
                             key={language.code}
                             type="button"
                             onClick={() => handleLanguageSelect(language.code)}
-                            className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm transition ${
+                            className={`flex w-full items-center rounded-lg border px-3 py-2 text-sm transition ${
                               isActive
-                                ? "border-indigo-300 text-indigo-600 dark:border-indigo-400/60 dark:text-indigo-200"
-                                : "border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-400"
+                                ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-500/60 dark:bg-indigo-500/10 dark:text-indigo-200"
+                                : "border-slate-200 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-100"
                             }`}
                           >
                             <span>{language.label}</span>
-                            {isActive ? <span aria-hidden>•</span> : null}
                           </button>
                         );
                       })}
@@ -420,17 +409,14 @@ const AppHeader = ({ themeMode, onSelectThemeMode }) => {
                         key={option.mode}
                         type="button"
                         onClick={() => onSelectThemeMode(option.mode)}
-                        className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm transition ${
+                        className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
                           isActive
-                            ? "border-indigo-300 text-indigo-600 dark:border-indigo-400/60 dark:text-indigo-200"
-                            : "border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-400"
+                            ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-500/60 dark:bg-indigo-500/10 dark:text-indigo-200"
+                            : "border-slate-200 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-100"
                         }`}
                       >
-                        <span className="inline-flex items-center gap-2">
-                          <OptionIcon className="h-4 w-4" aria-hidden />
-                          {option.label}
-                        </span>
-                        {isActive ? <span aria-hidden>•</span> : null}
+                        <OptionIcon className="h-4 w-4" aria-hidden />
+                        <span>{option.label}</span>
                       </button>
                     );
                   })}

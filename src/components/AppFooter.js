@@ -6,7 +6,7 @@ const AppFooter = () => (
     className="border-t border-slate-200 bg-white/80 py-6 text-sm text-slate-500 backdrop-blur dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400"
   >
     <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 sm:flex-row">
-      <p>© {new Date().getFullYear()} Mieszko Iwaniec. Wszystkie prawa zastrzeżone.</p>
+      <p>© {new Date().getFullYear()} Mieszko Iwaniec.</p>
       <a
         href="https://github.com/myeshco02"
         target="_blank"

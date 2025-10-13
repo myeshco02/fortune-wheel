@@ -21,7 +21,7 @@ const SpinPage = () => {
   const [copyError, setCopyError] = useState(false);
   const spinTimeoutRef = useRef(null);
   const wheelContainerRef = useRef(null);
-  const [wheelSize, setWheelSize] = useState(360);
+  const [wheelSize, setWheelSize] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKeyValue, setEditKeyValue] = useState("");
   const [editKeyErrorKey, setEditKeyErrorKey] = useState(null);
@@ -74,14 +74,35 @@ const SpinPage = () => {
 
   useEffect(() => {
     const updateSize = () => {
-      if (wheelContainerRef.current) {
-        setWheelSize(wheelContainerRef.current.offsetWidth);
+      const node = wheelContainerRef.current;
+      if (!node) {
+        return;
+      }
+      const width = node.getBoundingClientRect().width;
+      if (width) {
+        setWheelSize(width);
       }
     };
 
     updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+
+    if (typeof ResizeObserver === "function") {
+      const observer = new ResizeObserver(updateSize);
+      const node = wheelContainerRef.current;
+      if (node) {
+        observer.observe(node);
+      }
+      return () => observer.disconnect();
+    }
+
+    const handleResize = () => updateSize();
+    window.addEventListener("resize", handleResize);
+    const raf = window.requestAnimationFrame(updateSize);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const slices = useMemo(() => wheel?.slices ?? [], [wheel]);

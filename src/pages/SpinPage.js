@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import confetti from "canvas-confetti";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
-import { getWheel } from "../firebase";
+import { getWheel, verifyEditKey } from "../firebase";
 
 const SPIN_DURATION = 4500;
 
@@ -20,6 +20,10 @@ const SpinPage = () => {
   const spinTimeoutRef = useRef(null);
   const wheelContainerRef = useRef(null);
   const [wheelSize, setWheelSize] = useState(360);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editKeyValue, setEditKeyValue] = useState("");
+  const [editKeyError, setEditKeyError] = useState(null);
+  const [isVerifyingEditKey, setIsVerifyingEditKey] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -158,6 +162,48 @@ const SpinPage = () => {
     }, SPIN_DURATION);
   };
 
+  const openEditModal = () => {
+    setEditKeyError(null);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    if (isVerifyingEditKey) {
+      return;
+    }
+    setIsEditModalOpen(false);
+    setEditKeyError(null);
+  };
+
+  const handleSubmitEditKey = async (event) => {
+    event.preventDefault();
+    const trimmed = editKeyValue.trim();
+    if (!trimmed) {
+      setEditKeyError("Podaj klucz edycji.");
+      return;
+    }
+
+    setIsVerifyingEditKey(true);
+    setEditKeyError(null);
+
+    try {
+      await verifyEditKey(id, trimmed);
+      setIsEditModalOpen(false);
+      navigate(`/builder?wheelId=${id}&editKey=${encodeURIComponent(trimmed)}`);
+    } catch (error) {
+      console.error(error);
+      if (error.code === "INVALID_EDIT_KEY") {
+        setEditKeyError("Klucz edycji jest nieprawidłowy.");
+      } else if (error.code === "NOT_FOUND") {
+        setEditKeyError("Nie znaleziono tej konfiguracji. Odśwież stronę i spróbuj ponownie.");
+      } else {
+        setEditKeyError("Wystąpił błąd podczas weryfikacji klucza. Spróbuj ponownie.");
+      }
+    } finally {
+      setIsVerifyingEditKey(false);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 py-12">
       <header className="space-y-2 text-center">
@@ -257,6 +303,13 @@ const SpinPage = () => {
               </div>
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
                 <CopyToClipboardButton value={shareUrl} onError={setCopyError} />
+                <button
+                  type="button"
+                  onClick={openEditModal}
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:border-slate-600 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
+                >
+                  Edytuj
+                </button>
                 {copyError ? (
                   <span className="text-xs font-medium text-rose-600 dark:text-rose-400">{copyError}</span>
                 ) : null}
@@ -280,6 +333,72 @@ const SpinPage = () => {
             </div>
           </section>
         </>
+      ) : null}
+
+      {isEditModalOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 backdrop-blur-sm"
+          onClick={closeEditModal}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl transition dark:bg-slate-900"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Edytuj konfigurację</h2>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  Wprowadź klucz edycji, aby otworzyć to koło w kreatorze.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:border-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
+              >
+                <span className="sr-only">Zamknij</span>
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitEditKey} className="mt-6 space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="edit-key-input" className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Klucz edycji
+                </label>
+                <input
+                  id="edit-key-input"
+                  value={editKeyValue}
+                  onChange={(event) => setEditKeyValue(event.target.value)}
+                  placeholder="Wklej lub wpisz klucz edycji"
+                  className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${
+                    editKeyError ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500"
+                  }`}
+                  autoComplete="off"
+                  disabled={isVerifyingEditKey}
+                />
+                {editKeyError ? <p className="text-xs text-rose-500">{editKeyError}</p> : null}
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  disabled={isVerifyingEditKey}
+                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-800 disabled:cursor-not-allowed disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:text-slate-100"
+                >
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  disabled={isVerifyingEditKey}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  {isVerifyingEditKey ? "Sprawdzanie..." : "Przejdź do edycji"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       ) : null}
     </div>
   );

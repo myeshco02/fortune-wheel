@@ -228,7 +228,7 @@ const SpinPage = () => {
 
       {!isLoading && !hasError && wheel ? (
         <>
-          <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <section className="rounded-2xl border border-slate-100 bg-white px-6 pb-6 pt-12 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div ref={wheelContainerRef} className="relative mx-auto aspect-square w-full max-w-[360px]">
               <div
                 className="relative h-full w-full rounded-full shadow-lg transition-transform duration-[4500ms] ease-out"
@@ -267,7 +267,14 @@ const SpinPage = () => {
                 })}
               </div>
               <div className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-5 flex flex-col items-center">
-                <div className="h-0 w-0 rotate-180 border-l-[16px] border-r-[16px] border-b-[32px] border-l-transparent border-r-transparent border-b-rose-500 drop-shadow-lg" />
+                <span
+                  className="relative block h-0 w-0"
+                  aria-hidden
+                  style={{ filter: "drop-shadow(0 0 0 rgba(255,255,255,0.9)) drop-shadow(0 6px 12px rgba(15,23,42,0.35))" }}
+                >
+                  <span className="absolute left-1/2 top-1/2 block h-0 w-0 -translate-x-1/2 -translate-y-1/2 rotate-180 border-l-[18px] border-r-[18px] border-b-[34px] border-l-transparent border-r-transparent border-b-white" />
+                  <span className="relative block h-0 w-0 rotate-180 border-l-[16px] border-r-[16px] border-b-[32px] border-l-transparent border-r-transparent border-b-rose-500" />
+                </span>
               </div>
               <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-gradient-to-br from-indigo-100 via-slate-50 to-amber-50 opacity-50" />
             </div>

@@ -1,0 +1,125 @@
+{
+  "app": {
+    "title": "Fortune Wheel"
+  },
+  "lang": {
+    "pl": "Polski",
+    "en": "English"
+  },
+  "navigation": {
+    "home": "Home",
+    "builder": "Builder"
+  },
+  "header": {
+    "toggleTheme": "Toggle color theme",
+    "toggleLanguage": "Switch language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuTitle": "Menu",
+    "languageLabel": "Language",
+    "themeLabel": "Theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "systemMode": "System preference"
+  },
+  "home": {
+    "heroTitle": "Welcome to the best Fortune Wheel!",
+    "heroSubtitle": "Create your own wheel, save the configuration and share it with others.",
+    "create": "Create wheel",
+    "open": "Open wheel",
+    "inputLabel": "Paste an existing wheel link or ID:",
+    "inputPlaceholder": "https://fortune-82366.web.app/spin/xyz123",
+    "inputError": "Provide a valid link or configuration ID.",
+    "builderCta": "Create wheel"
+  },
+  "builder": {
+    "title": "Wheel Builder",
+    "subtitle": {
+      "create": "Each saved wheel creates a new configuration.",
+      "edit": "You are editing an existing configuration. Saving requires a valid edit key."
+    },
+    "loading": "Loading configuration...",
+    "loadError": {
+      "invalidKey": "The edit key is invalid. Check it and try again.",
+      "notFound": "Could not find a wheel with the provided ID.",
+      "generic": "Failed to load wheel for editing. Please try again."
+    },
+    "sliceError": {
+      "empty": "The slice must have a name.",
+      "tooLong": "Maximum {{max}} characters."
+    },
+    "titleLabel": "Wheel name (optional)",
+    "titlePlaceholder": "Name, e.g. Company party",
+    "slicesHeading": "Wheel slices",
+    "sliceCount": "Number of slices: {{count}} / {{max}}",
+    "slicePlaceholder": "Slice name {{index}}",
+    "colorLabel": "Select color for slice {{index}}",
+    "addSlice": "Add new slice (max {{max}})",
+    "remove": "Remove",
+    "reset": "Start over",
+    "ready": "Ready to save.",
+    "validationError": "Make sure every slice has a name and you keep the minimum number of slices.",
+    "save": {
+      "create": "Save configuration",
+      "edit": "Save changes",
+      "saving": "Saving..."
+    },
+    "saveError": {
+      "invalidKey": "The edit key is invalid. Refresh the link and try again.",
+      "notFound": "Wheel not found. If the problem persists, create a new configuration.",
+      "generic": "Failed to save the wheel. Please try again.",
+      "clipboard": "Could not copy the value to the clipboard."
+    },
+    "success": {
+      "title": "Configuration saved!",
+      "create": "Share the link with friends and keep the edit key safe. You'll need it for future changes.",
+      "edit": "Changes saved. The edit key stays the same – use it to reopen this builder.",
+      "wheelId": "Wheel ID:",
+      "editKey": "Edit key:",
+      "editKeyHint": "Store it in a safe place. Only people with this key can modify the wheel.",
+      "editLink": "Edit link:",
+      "editLinkHint": "Opens the builder with the wheel and edit key in the URL.",
+      "editKeyCopied": "Key copied",
+      "editLinkCopied": "Link copied",
+      "shareLinkCopied": "Link copied",
+      "clipboardAria": {
+        "share": "Copy spin link",
+        "editKey": "Copy edit key",
+        "editLink": "Copy edit link"
+      }
+    },
+    "openInNewTab": "Open in new tab"
+  },
+  "spin": {
+    "title": "Spin the wheel",
+    "configuration": "Configuration: {{id}}",
+    "loading": "Loading fortune wheel...",
+    "loadError": "An error occurred while fetching the configuration. Refresh and try again.",
+    "spin": "Spin the wheel",
+    "spinning": "Spinning...",
+    "winnerPrefix": "Winner:",
+    "wait": "Wait for the spin to finish!",
+    "sliceCount": "Number of slices: {{count}}",
+    "untitled": "Untitled wheel",
+    "copyError": "Could not copy the link to the clipboard.",
+    "copySuccess": "Link copied",
+    "copyAria": "Copy spin link",
+    "edit": "Edit",
+    "editModal": {
+      "title": "Edit configuration",
+      "description": "Enter the edit key to open this wheel in the builder.",
+      "label": "Edit key",
+      "placeholder": "Paste or type the edit key",
+      "cancel": "Cancel",
+      "submit": "Go to edit",
+      "submitting": "Verifying...",
+      "close": "Close",
+      "error": {
+        "required": "Provide the edit key.",
+        "invalid": "The edit key is invalid.",
+        "notFound": "Configuration not found. Refresh and try again.",
+        "generic": "An error occurred while verifying the key. Please try again."
+      }
+    }
+  }
+}

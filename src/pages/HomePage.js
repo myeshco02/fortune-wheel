@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import backgroundImage from "../background-fortune.webp";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
-  const [error, setError] = useState(null);
+  const [hasError, setHasError] = useState(false);
+  const { t } = useTranslation("common");
 
   const extractIdFromInput = (value) => {
     const trimmed = value.trim();
@@ -30,10 +32,10 @@ const HomePage = () => {
     event.preventDefault();
     const extractedId = extractIdFromInput(inputValue);
     if (!extractedId) {
-      setError("Podaj poprawny link lub ID konfiguracji.");
+      setHasError(true);
       return;
     }
-    setError(null);
+    setHasError(false);
     navigate(`/spin/${extractedId}`);
   };
 
@@ -54,10 +56,8 @@ const HomePage = () => {
             textShadow: "0 10px 24px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.65)",
           }}
         >
-          <h1 className="text-4xl font-bold">Witaj w najlepszym Kole Fortuny!</h1>
-          <p className="text-base md:text-lg">
-            Stwórz własne koło fortuny, zapisz konfigurację i podziel się nią z innymi.
-          </p>
+          <h1 className="text-4xl font-bold">{t("home.heroTitle")}</h1>
+          <p className="text-base md:text-lg">{t("home.heroSubtitle")}</p>
         </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -65,7 +65,7 @@ const HomePage = () => {
           to="/builder"
           className="rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-indigo-500"
         >
-          Utwórz koło
+          {t("home.create")}
         </Link>
       </div>
 
@@ -74,14 +74,14 @@ const HomePage = () => {
         className="w-full max-w-xl space-y-3 rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-sm dark:border-slate-700 dark:bg-slate-800"
       >
         <label htmlFor="wheel-link" className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          Wklej link lub ID istniejącego koła:
+          {t("home.inputLabel")}
         </label>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             id="wheel-link"
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
-            placeholder="https://fortune-82366.web.app/spin/xyz123"
+            placeholder={t("home.inputPlaceholder")}
             className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-base shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             autoComplete="off"
           />
@@ -89,10 +89,10 @@ const HomePage = () => {
             type="submit"
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-slate-700 dark:bg-indigo-600 dark:hover:bg-indigo-500"
           >
-            Otwórz koło
+            {t("home.open")}
           </button>
         </div>
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {hasError ? <p className="text-sm text-rose-500">{t("home.inputError")}</p> : null}
       </form>
       </div>
     </div>

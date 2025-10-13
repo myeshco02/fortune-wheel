@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import confetti from "canvas-confetti";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
@@ -16,14 +17,15 @@ const SpinPage = () => {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState(null);
-  const [copyError, setCopyError] = useState(null);
+  const [copyError, setCopyError] = useState(false);
   const spinTimeoutRef = useRef(null);
   const wheelContainerRef = useRef(null);
   const [wheelSize, setWheelSize] = useState(360);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKeyValue, setEditKeyValue] = useState("");
-  const [editKeyError, setEditKeyError] = useState(null);
+  const [editKeyErrorKey, setEditKeyErrorKey] = useState(null);
   const [isVerifyingEditKey, setIsVerifyingEditKey] = useState(false);
+  const { t } = useTranslation("common");
 
   useEffect(() => {
     let isMounted = true;
@@ -163,7 +165,7 @@ const SpinPage = () => {
   };
 
   const openEditModal = () => {
-    setEditKeyError(null);
+    setEditKeyErrorKey(null);
     setIsEditModalOpen(true);
   };
 
@@ -172,19 +174,19 @@ const SpinPage = () => {
       return;
     }
     setIsEditModalOpen(false);
-    setEditKeyError(null);
+    setEditKeyErrorKey(null);
   };
 
   const handleSubmitEditKey = async (event) => {
     event.preventDefault();
     const trimmed = editKeyValue.trim();
     if (!trimmed) {
-      setEditKeyError("Podaj klucz edycji.");
+      setEditKeyErrorKey("required");
       return;
     }
 
     setIsVerifyingEditKey(true);
-    setEditKeyError(null);
+    setEditKeyErrorKey(null);
 
     try {
       await verifyEditKey(id, trimmed);
@@ -193,11 +195,11 @@ const SpinPage = () => {
     } catch (error) {
       console.error(error);
       if (error.code === "INVALID_EDIT_KEY") {
-        setEditKeyError("Klucz edycji jest nieprawidłowy.");
+        setEditKeyErrorKey("invalid");
       } else if (error.code === "NOT_FOUND") {
-        setEditKeyError("Nie znaleziono tej konfiguracji. Odśwież stronę i spróbuj ponownie.");
+        setEditKeyErrorKey("notFound");
       } else {
-        setEditKeyError("Wystąpił błąd podczas weryfikacji klucza. Spróbuj ponownie.");
+        setEditKeyErrorKey("generic");
       }
     } finally {
       setIsVerifyingEditKey(false);
@@ -207,20 +209,20 @@ const SpinPage = () => {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 py-12">
       <header className="space-y-2 text-center">
-        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Zakręć kołem</h1>
-        <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Konfiguracja: {id}</p>
+        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">{t("spin.title")}</h1>
+        <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">{t("spin.configuration", { id })}</p>
       </header>
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-white py-16 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500 dark:border-indigo-400/40 dark:border-t-indigo-400" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">Wczytywanie koła fortuny...</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t("spin.loading")}</p>
         </div>
       ) : null}
 
       {hasError ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-rose-600 shadow-sm dark:border-rose-500/40 dark:bg-rose-900/20 dark:text-rose-300">
-          Wystąpił błąd podczas pobierania konfiguracji. Odśwież stronę i spróbuj ponownie.
+          {t("spin.loadError")}
         </div>
       ) : null}
 
@@ -277,18 +279,16 @@ const SpinPage = () => {
                 disabled={isSpinning || slices.length < 2}
                 className="rounded-xl bg-emerald-500 px-8 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-emerald-500 dark:hover:bg-emerald-400"
               >
-                {isSpinning ? "Losuję..." : "Zakręć kołem"}
+                {isSpinning ? t("spin.spinning") : t("spin.spin")}
               </button>
 
               {winner ? (
                 <div className="w-full max-w-md rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-center shadow-sm dark:border-emerald-500/40 dark:bg-emerald-900/20">
-                  <p className="text-sm font-medium text-emerald-600 dark:text-emerald-300">Wylosowano:</p>
+                  <p className="text-sm font-medium text-emerald-600 dark:text-emerald-300">{t("spin.winnerPrefix")}</p>
                   <p className="truncate text-2xl font-bold text-emerald-700 dark:text-emerald-200">{winner.label}</p>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Poczekaj na koniec losowania!
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t("spin.wait")}</p>
               )}
             </div>
           </section>
@@ -297,21 +297,26 @@ const SpinPage = () => {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                  {wheel.title || "Koło bez nazwy"}
+                  {wheel.title || t("spin.untitled")}
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Liczba pól: {slices.length}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t("spin.sliceCount", { count: slices.length })}</p>
               </div>
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-                <CopyToClipboardButton value={shareUrl} onError={setCopyError} />
+                <CopyToClipboardButton
+                  value={shareUrl}
+                  successText={t("spin.copySuccess")}
+                  ariaLabel={t("spin.copyAria")}
+                  onError={(msg) => setCopyError(Boolean(msg))}
+                />
                 <button
                   type="button"
                   onClick={openEditModal}
                   className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:border-slate-600 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-200"
                 >
-                  Edytuj
+                  {t("spin.edit")}
                 </button>
                 {copyError ? (
-                  <span className="text-xs font-medium text-rose-600 dark:text-rose-400">{copyError}</span>
+                  <span className="text-xs font-medium text-rose-600 dark:text-rose-400">{t("spin.copyError")}</span>
                 ) : null}
               </div>
             </div>
@@ -346,17 +351,15 @@ const SpinPage = () => {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Edytuj konfigurację</h2>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Wprowadź klucz edycji, aby otworzyć to koło w kreatorze.
-                </p>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("spin.editModal.title")}</h2>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("spin.editModal.description")}</p>
               </div>
               <button
                 type="button"
                 onClick={closeEditModal}
                 className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:border-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
               >
-                <span className="sr-only">Zamknij</span>
+                <span className="sr-only">{t("spin.editModal.close")}</span>
                 ×
               </button>
             </div>
@@ -364,20 +367,22 @@ const SpinPage = () => {
             <form onSubmit={handleSubmitEditKey} className="mt-6 space-y-4">
               <div className="space-y-2">
                 <label htmlFor="edit-key-input" className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Klucz edycji
+                  {t("spin.editModal.label")}
                 </label>
                 <input
                   id="edit-key-input"
                   value={editKeyValue}
                   onChange={(event) => setEditKeyValue(event.target.value)}
-                  placeholder="Wklej lub wpisz klucz edycji"
+                  placeholder={t("spin.editModal.placeholder")}
                   className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${
-                    editKeyError ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500"
+                    editKeyErrorKey ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500"
                   }`}
                   autoComplete="off"
                   disabled={isVerifyingEditKey}
                 />
-                {editKeyError ? <p className="text-xs text-rose-500">{editKeyError}</p> : null}
+                {editKeyErrorKey ? (
+                  <p className="text-xs text-rose-500">{t(`spin.editModal.error.${editKeyErrorKey}`)}</p>
+                ) : null}
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                 <button
@@ -386,14 +391,14 @@ const SpinPage = () => {
                   disabled={isVerifyingEditKey}
                   className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-800 disabled:cursor-not-allowed disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:text-slate-100"
                 >
-                  Anuluj
+                  {t("spin.editModal.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={isVerifyingEditKey}
                   className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
-                  {isVerifyingEditKey ? "Sprawdzanie..." : "Przejdź do edycji"}
+                  {isVerifyingEditKey ? t("spin.editModal.submitting") : t("spin.editModal.submit")}
                 </button>
               </div>
             </form>

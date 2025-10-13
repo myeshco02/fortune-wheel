@@ -1,0 +1,125 @@
+{
+  "app": {
+    "title": "Koło fortuny"
+  },
+  "lang": {
+    "pl": "Polski",
+    "en": "English"
+  },
+  "navigation": {
+    "home": "Strona główna",
+    "builder": "Kreator"
+  },
+  "header": {
+    "toggleTheme": "Przełącz tryb kolorów",
+    "toggleLanguage": "Zmień język",
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu",
+    "menuTitle": "Menu",
+    "languageLabel": "Język",
+    "themeLabel": "Motyw",
+    "lightMode": "Tryb jasny",
+    "darkMode": "Tryb ciemny",
+    "systemMode": "Zgodnie z systemem"
+  },
+  "home": {
+    "heroTitle": "Witaj w najlepszym Kole Fortuny!",
+    "heroSubtitle": "Stwórz własne koło fortuny, zapisz konfigurację i podziel się nią z innymi.",
+    "create": "Utwórz koło",
+    "open": "Otwórz koło",
+    "inputLabel": "Wklej link lub ID istniejącego koła:",
+    "inputPlaceholder": "https://fortune-82366.web.app/spin/xyz123",
+    "inputError": "Podaj poprawny link lub ID konfiguracji.",
+    "builderCta": "Utwórz koło"
+  },
+  "builder": {
+    "title": "Kreator koła",
+    "subtitle": {
+      "create": "Każde zapisane koło tworzy nową konfigurację.",
+      "edit": "Edytujesz istniejącą konfigurację. Zapis wymaga poprawnego klucza edycji."
+    },
+    "loading": "Wczytywanie konfiguracji...",
+    "loadError": {
+      "invalidKey": "Klucz edycji jest nieprawidłowy. Sprawdź i spróbuj ponownie.",
+      "notFound": "Nie znaleziono koła o podanym ID.",
+      "generic": "Nie udało się wczytać koła do edycji. Spróbuj ponownie."
+    },
+    "sliceError": {
+      "empty": "Pole musi mieć nazwę.",
+      "tooLong": "Maksymalnie {{max}} znaków."
+    },
+    "titleLabel": "Nazwa koła (opcjonalnie)",
+    "titlePlaceholder": "Nazwa, np. Impreza firmowa",
+    "slicesHeading": "Pola koła",
+    "sliceCount": "Liczba pól: {{count}} / {{max}}",
+    "slicePlaceholder": "Nazwa pola {{index}}",
+    "colorLabel": "Wybierz kolor dla pola {{index}}",
+    "addSlice": "Dodaj nowe pole (max {{max}}).",
+    "remove": "Usuń",
+    "reset": "Zacznij od nowa",
+    "ready": "Gotowe do zapisania.",
+    "validationError": "Upewnij się, że każde pole ma nazwę i zachowujesz minimalną liczbę pól.",
+    "save": {
+      "create": "Zapisz konfigurację",
+      "edit": "Zapisz zmiany",
+      "saving": "Zapisywanie..."
+    },
+    "saveError": {
+      "invalidKey": "Klucz edycji jest nieprawidłowy. Odśwież link i spróbuj ponownie.",
+      "notFound": "Nie znaleziono koła do zapisania. Upewnij się, że posługujesz się właściwym linkiem.",
+      "generic": "Nie udało się zapisać koła. Spróbuj ponownie.",
+      "clipboard": "Nie udało się skopiować wartości do schowka."
+    },
+    "success": {
+      "title": "Konfiguracja zapisana!",
+      "create": "Udostępnij link znajomym i koniecznie zachowaj klucz edycji. Będzie potrzebny przy każdej zmianie koła.",
+      "edit": "Zmiany zostały zapisane. Klucz edycji pozostaje taki sam – użyj go, aby ponownie otworzyć ten kreator.",
+      "wheelId": "ID koła:",
+      "editKey": "Klucz edycji:",
+      "editKeyHint": "Zachowaj go w bezpiecznym miejscu. Tylko osoby posiadające ten klucz mogą modyfikować koło.",
+      "editLink": "Link do edycji:",
+      "editLinkHint": "Otwiera kreator z wypełnionym kołem i kluczem edycji w adresie.",
+      "editKeyCopied": "Klucz skopiowany",
+      "editLinkCopied": "Link skopiowany",
+      "shareLinkCopied": "Link skopiowany",
+      "clipboardAria": {
+        "share": "Kopiuj link do zakręcenia",
+        "editKey": "Kopiuj klucz edycji",
+        "editLink": "Kopiuj link do edycji"
+      }
+    },
+    "openInNewTab": "Otwórz w nowej karcie"
+  },
+  "spin": {
+    "title": "Zakręć kołem",
+    "configuration": "Konfiguracja: {{id}}",
+    "loading": "Wczytywanie koła fortuny...",
+    "loadError": "Wystąpił błąd podczas pobierania konfiguracji. Odśwież stronę i spróbuj ponownie.",
+    "spin": "Zakręć kołem",
+    "spinning": "Losuję...",
+    "winnerPrefix": "Wylosowano:",
+    "wait": "Poczekaj na koniec losowania!",
+    "sliceCount": "Liczba pól: {{count}}",
+    "untitled": "Koło bez nazwy",
+    "copyError": "Nie udało się skopiować linku do schowka.",
+    "copySuccess": "Link skopiowany",
+    "copyAria": "Kopiuj link do zakręcenia",
+    "edit": "Edytuj",
+    "editModal": {
+      "title": "Edytuj konfigurację",
+      "description": "Wprowadź klucz edycji, aby otworzyć to koło w kreatorze.",
+      "label": "Klucz edycji",
+      "placeholder": "Wklej lub wpisz klucz edycji",
+      "cancel": "Anuluj",
+      "submit": "Przejdź do edycji",
+      "submitting": "Sprawdzanie...",
+      "close": "Zamknij",
+      "error": {
+        "required": "Podaj klucz edycji.",
+        "invalid": "Klucz edycji jest nieprawidłowy.",
+        "notFound": "Nie znaleziono tej konfiguracji. Odśwież stronę i spróbuj ponownie.",
+        "generic": "Wystąpił błąd podczas weryfikacji klucza. Spróbuj ponownie."
+      }
+    }
+  }
+}

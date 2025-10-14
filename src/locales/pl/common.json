@@ -91,7 +91,11 @@
         "editLink": "Kopiuj link do edycji"
       }
     },
-    "openInNewTab": "Otwórz w nowej karcie"
+    "openInNewTab": "Otwórz w nowej karcie",
+    "shortcuts": {
+      "enterHint": "Naciśnij Enter, aby dodać kolejne pole",
+      "enterHintButton": "Rozumiem"
+    }
   },
   "spin": {
     "title": "Zakręć kołem",

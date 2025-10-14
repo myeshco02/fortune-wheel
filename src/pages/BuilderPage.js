@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
+import Tooltip from "../components/Tooltip";
 import { createWheel, getWheelForEditing, updateWheel } from "../firebase";
 
 const MIN_SLICES = 2;
 const MAX_SLICES = 16;
 const MAX_LABEL_LENGTH = 60;
+const ENTER_TIP_SESSION_KEY = "builder-enter-tip-shown";
 
 const COLOR_PALETTE = [
   "#6366F1",
@@ -47,6 +49,19 @@ const BuilderPage = () => {
   const [loadErrorKey, setLoadErrorKey] = useState(null);
   const [editContext, setEditContext] = useState(null);
   const [loadedWheel, setLoadedWheel] = useState(null);
+  const inputRefs = useRef([]);
+  const [activeTipIndex, setActiveTipIndex] = useState(null);
+  const [supportsKeyboard, setSupportsKeyboard] = useState(false);
+  const [hasShownEnterTip, setHasShownEnterTip] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+    try {
+      return sessionStorage.getItem(ENTER_TIP_SESSION_KEY) === "true";
+    } catch {
+      return true;
+    }
+  });
 
   const [searchParams] = useSearchParams();
   const editWheelIdParam = searchParams.get("wheelId");
@@ -54,6 +69,24 @@ const BuilderPage = () => {
 
   const navigate = useNavigate();
   const { t } = useTranslation("common");
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      setHasShownEnterTip(sessionStorage.getItem(ENTER_TIP_SESSION_KEY) === "true");
+    } catch {
+      setHasShownEnterTip(true);
+    }
+    const pointerFine = window.matchMedia?.("(pointer:fine)")?.matches ?? false;
+    const maxTouchPoints = typeof navigator !== "undefined" ? navigator.maxTouchPoints ?? 0 : 0;
+    setSupportsKeyboard(pointerFine || maxTouchPoints === 0);
+  }, []);
+
+  useEffect(() => {
+    inputRefs.current = inputRefs.current.slice(0, slices.length);
+  }, [slices.length]);
 
   const updateBuilderUrl = useCallback(
     (wheelId, editKey) => {
@@ -188,6 +221,66 @@ const BuilderPage = () => {
         slice.id === sliceId ? { ...slice, label: value.slice(0, MAX_LABEL_LENGTH) } : slice
       )
     );
+  };
+
+  const focusSliceField = (index) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const field = inputRefs.current[index];
+        if (field) {
+          field.focus();
+          if (typeof field.select === "function") {
+            field.select();
+          }
+        }
+      });
+    });
+  };
+
+  const handleLabelFocus = (index) => {
+    if (!supportsKeyboard) {
+      setActiveTipIndex(null);
+      return;
+    }
+    if (!hasShownEnterTip) {
+      setActiveTipIndex(index);
+      setHasShownEnterTip(true);
+      try {
+        sessionStorage.setItem(ENTER_TIP_SESSION_KEY, "true");
+      } catch {
+        /* ignore storage errors */
+      }
+    }
+  };
+
+  const handleLabelBlur = (index) => {
+    if (activeTipIndex === index) {
+      setActiveTipIndex(null);
+    }
+  };
+
+  const handleLabelKeyDown = (index) => (event) => {
+    if (
+      event.key !== "Enter" ||
+      event.shiftKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey
+    ) {
+      return;
+    }
+    event.preventDefault();
+    setActiveTipIndex(null);
+    if (index < slices.length - 1) {
+      focusSliceField(index + 1);
+      return;
+    }
+    if (slices.length >= MAX_SLICES) {
+      return;
+    }
+    const nextIndex = slices.length;
+    handleAddSlice();
+    focusSliceField(nextIndex);
   };
 
   const handleColorChange = (sliceId, value) => {
@@ -351,12 +444,47 @@ const BuilderPage = () => {
 
                     <div className="flex-1 space-y-1">
                       <input
+                        ref={(element) => {
+                          inputRefs.current[index] = element || null;
+                        }}
                         value={slice.label}
                         onChange={(event) => handleLabelChange(slice.id, event.target.value)}
+                        onFocus={() => handleLabelFocus(index)}
+                        onBlur={() => handleLabelBlur(index)}
+                        onKeyDown={handleLabelKeyDown(index)}
                         placeholder={t("builder.slicePlaceholder", { index: index + 1 })}
                         className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:bg-slate-900 dark:text-slate-100 ${
                           error ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500 dark:border-slate-700"
                         }`}
+                      />
+                      <Tooltip
+                        anchorRef={() => inputRefs.current[index]}
+                        open={supportsKeyboard && activeTipIndex === index}
+                        placement="top"
+                        autoHide
+                        hideDelay={5000}
+                        hoverPauses
+                        onClose={() => setActiveTipIndex(null)}
+                        content={
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                              <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
+                                ⏎
+                                <span>Enter</span>
+                              </span>
+                              <span className="text-xs text-slate-600 dark:text-slate-300">
+                                {t("builder.shortcuts.enterHint")}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setActiveTipIndex(null)}
+                              className="inline-flex items-center justify-center rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 dark:focus-visible:outline-slate-400"
+                            >
+                              {t("builder.shortcuts.enterHintButton")}
+                            </button>
+                          </div>
+                        }
                       />
                       <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
                         <span>{slice.label.length}/{MAX_LABEL_LENGTH}</span>

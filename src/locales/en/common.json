@@ -91,7 +91,11 @@
         "editLink": "Copy edit link"
       }
     },
-    "openInNewTab": "Open in new tab"
+    "openInNewTab": "Open in new tab",
+    "shortcuts": {
+      "enterHint": "Press Enter to add the next slice",
+      "enterHintButton": "Got it"
+    }
   },
   "spin": {
     "title": "Spin the wheel",

@@ -697,81 +697,80 @@ const SortableSlice = ({
           isDragging ? "ring-2 ring-indigo-200 bg-white dark:bg-slate-800" : ""
         }`}
       >
-      <div className="flex items-center gap-3 sm:w-32">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-500 shadow">
-          {index + 1}
-        </span>
-        <input
-          type="color"
-          value={slice.color}
-          onChange={(event) => onColorChange(slice.id, event.target.value)}
-          className="h-10 w-10 cursor-pointer rounded-md border border-slate-200 bg-white p-1 shadow-inner dark:border-slate-600"
-          aria-label={t("builder.colorLabel", { index: index + 1 })}
-        />
-      </div>
-
-      <div className="flex-1 space-y-1">
-        <input
-          ref={registerRef}
-          value={slice.label}
-          onChange={(event) => onLabelChange(slice.id, event.target.value)}
-          onFocus={() => onLabelFocus(index)}
-          onBlur={() => onLabelBlur(index)}
-          onKeyDown={onLabelKeyDown(index)}
-          placeholder={t("builder.slicePlaceholder", { index: index + 1 })}
-          className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:bg-slate-900 dark:text-slate-100 ${
-            error ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500 dark:border-slate-700"
-          }`}
-        />
-        <Tooltip
-          anchorRef={inputRef}
-          open={supportsKeyboard && activeTipIndex === index}
-          placement="top"
-          autoHide
-          hideDelay={5000}
-          hoverPauses
-          onClose={onTooltipClose}
-          content={
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
-                  ⏎
-                  <span>Enter</span>
-                </span>
-                <span className="text-xs text-slate-600 dark:text-slate-300">
-                  {t("builder.shortcuts.enterHint")}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={onTooltipClose}
-                className="inline-flex items-center justify-center rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 dark:focus-visible:outline-slate-400"
-              >
-                {t("builder.shortcuts.enterHintButton")}
-              </button>
-            </div>
-          }
-        />
-        <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
-          <span>
-            {slice.label.length}/{maxLabelLength}
+        <div className="flex items-center gap-3 sm:w-32">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-500 shadow">
+            {index + 1}
           </span>
-          {error ? (
-            <span className="text-rose-500">{t(`builder.sliceError.${error}`, { max: maxLabelLength })}</span>
-          ) : null}
+          <input
+            type="color"
+            value={slice.color}
+            onChange={(event) => onColorChange(slice.id, event.target.value)}
+            className="h-10 w-10 cursor-pointer rounded-md border border-slate-200 bg-white p-1 shadow-inner dark:border-slate-600"
+            aria-label={t("builder.colorLabel", { index: index + 1 })}
+          />
         </div>
-      </div>
 
-      <div className="ml-auto flex justify-end">
-        <button
-          type="button"
-          onClick={() => onRemove(slice.id)}
-          disabled={totalSlices <= minSlices}
-          className="self-start rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-rose-300 hover:text-rose-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-400 dark:hover:text-rose-600 dark:disabled:border-slate-700 dark:disabled:text-slate-500"
-        >
-          {t("builder.remove")}
-        </button>
-      </div>
+        <div className="flex-1 space-y-1">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <input
+              ref={registerRef}
+              value={slice.label}
+              onChange={(event) => onLabelChange(slice.id, event.target.value)}
+              onFocus={() => onLabelFocus(index)}
+              onBlur={() => onLabelBlur(index)}
+              onKeyDown={onLabelKeyDown(index)}
+              placeholder={t("builder.slicePlaceholder", { index: index + 1 })}
+              className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:bg-slate-900 dark:text-slate-100 ${
+                error ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500 dark:border-slate-700"
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => onRemove(slice.id)}
+              disabled={totalSlices <= minSlices}
+              className="inline-flex items-center justify-center self-end rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-rose-300 hover:text-rose-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-400 dark:hover:text-rose-600 dark:disabled:border-slate-700 dark:disabled:text-slate-500 sm:self-auto sm:px-4"
+            >
+              {t("builder.remove")}
+            </button>
+          </div>
+          <Tooltip
+            anchorRef={inputRef}
+            open={supportsKeyboard && activeTipIndex === index}
+            placement="top"
+            autoHide
+            hideDelay={5000}
+            hoverPauses
+            onClose={onTooltipClose}
+            content={
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
+                    ⏎
+                    <span>Enter</span>
+                  </span>
+                  <span className="text-xs text-slate-600 dark:text-slate-300">
+                    {t("builder.shortcuts.enterHint")}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onTooltipClose}
+                  className="inline-flex items-center justify-center rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 dark:focus-visible:outline-slate-400"
+                >
+                  {t("builder.shortcuts.enterHintButton")}
+                </button>
+              </div>
+            }
+          />
+          <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+            <span>
+              {slice.label.length}/{maxLabelLength}
+            </span>
+            {error ? (
+              <span className="text-rose-500">{t(`builder.sliceError.${error}`, { max: maxLabelLength })}</span>
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -577,12 +577,14 @@ const BuilderPage = () => {
                   readOnly
                   className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm focus:outline-none dark:border-slate-600 dark:bg-slate-950 dark:text-slate-200"
                 />
-                <CopyToClipboardButton
-                  value={shareInfo.id}
-                  successText={t("builder.success.wheelIdCopied")}
-                  ariaLabel={t("builder.success.clipboardAria.wheelId")}
-                  onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
-                />
+                <div className="flex w-full justify-end sm:w-auto">
+                  <CopyToClipboardButton
+                    value={shareInfo.id}
+                    successText={t("builder.success.wheelIdCopied")}
+                    ariaLabel={t("builder.success.clipboardAria.wheelId")}
+                    onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
+                  />
+                </div>
               </div>
             </div>
             {shareInfo.shareUrl ? (
@@ -596,31 +598,35 @@ const BuilderPage = () => {
                     readOnly
                     className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:outline-none dark:border-slate-600 dark:bg-slate-950 dark:text-slate-200"
                   />
-                  <CopyToClipboardButton
-                    value={shareInfo.shareUrl}
-                    successText={t("builder.success.shareLinkCopied")}
-                    ariaLabel={t("builder.success.clipboardAria.share")}
-                    onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
-                  />
+                  <div className="flex w-full justify-end sm:w-auto">
+                    <CopyToClipboardButton
+                      value={shareInfo.shareUrl}
+                      successText={t("builder.success.shareLinkCopied")}
+                      ariaLabel={t("builder.success.clipboardAria.share")}
+                      onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
+                    />
+                  </div>
                 </div>
               </div>
             ) : null}
             {shareInfo.editKey ? (
-              <div className="flex flex-col gap-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-4 text-sm text-slate-700 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-slate-200 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-4 text-sm text-slate-700 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-slate-200">
                 <div className="space-y-1">
                   <span className="font-medium text-indigo-700 dark:text-indigo-300">{t("builder.success.editKey")}</span>
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t("builder.success.editKeyHint")}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <code className="rounded bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow dark:bg-slate-900 dark:text-slate-200">
+                <div className="flex flex-wrap items-center gap-3">
+                  <code className="break-all rounded bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow dark:bg-slate-900 dark:text-slate-200">
                     {shareInfo.editKey}
                   </code>
-                  <CopyToClipboardButton
-                    value={shareInfo.editKey}
-                    ariaLabel={t("builder.success.clipboardAria.editKey")}
-                    successText={t("builder.success.editKeyCopied")}
-                    onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
-                  />
+                  <div className="ml-auto flex justify-end gap-3 sm:ml-0">
+                    <CopyToClipboardButton
+                      value={shareInfo.editKey}
+                      ariaLabel={t("builder.success.clipboardAria.editKey")}
+                      successText={t("builder.success.editKeyCopied")}
+                      onError={(msg) => setSaveErrorKey(msg ? "clipboard" : null)}
+                    />
+                  </div>
                 </div>
               </div>
             ) : null}
@@ -756,6 +762,7 @@ const SortableSlice = ({
         </div>
       </div>
 
+      <div className="ml-auto flex justify-end">
         <button
           type="button"
           onClick={() => onRemove(slice.id)}
@@ -764,6 +771,7 @@ const SortableSlice = ({
         >
           {t("builder.remove")}
         </button>
+      </div>
       </div>
     </div>
   );

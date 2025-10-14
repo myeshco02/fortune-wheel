@@ -20,7 +20,7 @@
     "themeLabel": "Motyw",
     "lightMode": "Tryb jasny",
     "darkMode": "Tryb ciemny",
-    "systemMode": "Zgodnie z systemem"
+    "systemMode": "System"
   },
   "home": {
     "heroTitle": "Witaj w najlepszym Kole Fortuny!",
@@ -96,7 +96,8 @@
       "enterHint": "Naciśnij Enter, aby dodać kolejne pole",
       "enterHintButton": "Rozumiem"
     },
-    "reorderHandle": "Przeciągnij pole {{index}}, aby zmienić kolejność"
+    "reorderHandle": "Przeciągnij pole {{index}}, aby zmienić kolejność",
+    "defaultSlice": "Pole {{index}}"
   },
   "spin": {
     "title": "Zakręć kołem",

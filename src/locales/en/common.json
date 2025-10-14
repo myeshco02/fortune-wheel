@@ -96,7 +96,8 @@
       "enterHint": "Press Enter to add the next slice",
       "enterHintButton": "Got it"
     },
-    "reorderHandle": "Drag slice {{index}} to reorder"
+    "reorderHandle": "Drag slice {{index}} to reorder",
+    "defaultSlice": "Slice {{index}}"
   },
   "spin": {
     "title": "Spin the wheel",

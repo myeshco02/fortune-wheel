@@ -1,7 +1,10 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;.drag-handle {
+@tailwind utilities;
+
+.drag-handle {
   cursor: grab;
+  touch-action: none;
 }
 .drag-handle:active {
   cursor: grabbing;

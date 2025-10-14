@@ -33,17 +33,18 @@ const generateSliceId = () => {
   return `slice-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-const createSlice = (index) => ({
+const createSlice = (index, t) => ({
   id: generateSliceId(),
-  label: `Pole ${index + 1}`,
+  label: t ? t("builder.defaultSlice", { index: index + 1 }) : `Slice ${index + 1}`,
   color: COLOR_PALETTE[index % COLOR_PALETTE.length],
 });
 
-const createInitialSlices = () => Array.from({ length: MIN_SLICES }, (_, index) => createSlice(index));
+const createInitialSlices = (t) => Array.from({ length: MIN_SLICES }, (_, index) => createSlice(index, t));
 
 const BuilderPage = () => {
+  const { t } = useTranslation("common");
   const [title, setTitle] = useState("");
-  const [slices, setSlices] = useState(createInitialSlices);
+  const [slices, setSlices] = useState(() => createInitialSlices(t));
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveErrorKey, setSaveErrorKey] = useState(null);
@@ -71,7 +72,6 @@ const BuilderPage = () => {
   const editKeyParam = searchParams.get("editKey");
 
   const navigate = useNavigate();
-  const { t } = useTranslation("common");
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -99,7 +99,7 @@ const BuilderPage = () => {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
+        delay: 250,
         tolerance: 8,
       },
     }),

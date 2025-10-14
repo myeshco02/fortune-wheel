@@ -95,7 +95,8 @@
     "shortcuts": {
       "enterHint": "Press Enter to add the next slice",
       "enterHintButton": "Got it"
-    }
+    },
+    "reorderHandle": "Drag slice {{index}} to reorder"
   },
   "spin": {
     "title": "Spin the wheel",

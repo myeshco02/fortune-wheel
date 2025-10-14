@@ -95,7 +95,8 @@
     "shortcuts": {
       "enterHint": "Naciśnij Enter, aby dodać kolejne pole",
       "enterHintButton": "Rozumiem"
-    }
+    },
+    "reorderHandle": "Przeciągnij pole {{index}}, aby zmienić kolejność"
   },
   "spin": {
     "title": "Zakręć kołem",

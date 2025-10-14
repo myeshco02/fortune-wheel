@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FiPlus } from "react-icons/fi";
+import { DndContext, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { FiMove, FiPlus } from "react-icons/fi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CopyToClipboardButton from "../components/CopyToClipboardButton";
@@ -87,6 +90,23 @@ const BuilderPage = () => {
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, slices.length);
   }, [slices.length]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const updateBuilderUrl = useCallback(
     (wheelId, editKey) => {
@@ -307,6 +327,26 @@ const BuilderPage = () => {
     setSlices((current) => current.filter((slice) => slice.id !== sliceId));
   };
 
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) {
+      return;
+    }
+    setSlices((current) => {
+      const oldIndex = current.findIndex((item) => item.id === active.id);
+      const newIndex = current.findIndex((item) => item.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) {
+        return current;
+      }
+      const nextRefs = arrayMove([...inputRefs.current], oldIndex, newIndex);
+      inputRefs.current = nextRefs;
+      const reordered = arrayMove(current, oldIndex, newIndex);
+      return reordered;
+    });
+    setActiveTipIndex(null);
+    setShareInfo(null);
+    setIsDirty(true);
+  };
+
   const handleReset = () => {
     if (isEditMode && loadedWheel) {
       setTitle(loadedWheel.title || "");
@@ -421,91 +461,36 @@ const BuilderPage = () => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {slices.map((slice, index) => {
-                const error = sliceErrors[index];
-                return (
-                  <div
-                    key={slice.id}
-                    className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 shadow-sm sm:flex-row sm:items-center dark:border-slate-700 dark:bg-slate-800/60"
-                  >
-                    <div className="flex items-center gap-3 sm:w-32">
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-500 shadow">
-                        {index + 1}
-                      </span>
-                      <input
-                        type="color"
-                        value={slice.color}
-                        onChange={(event) => handleColorChange(slice.id, event.target.value)}
-                        className="h-10 w-10 cursor-pointer rounded-md border border-slate-200 bg-white p-1 shadow-inner dark:border-slate-600"
-                        aria-label={t("builder.colorLabel", { index: index + 1 })}
-                      />
-                    </div>
-
-                    <div className="flex-1 space-y-1">
-                      <input
-                        ref={(element) => {
-                          inputRefs.current[index] = element || null;
-                        }}
-                        value={slice.label}
-                        onChange={(event) => handleLabelChange(slice.id, event.target.value)}
-                        onFocus={() => handleLabelFocus(index)}
-                        onBlur={() => handleLabelBlur(index)}
-                        onKeyDown={handleLabelKeyDown(index)}
-                        placeholder={t("builder.slicePlaceholder", { index: index + 1 })}
-                        className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:bg-slate-900 dark:text-slate-100 ${
-                          error ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500 dark:border-slate-700"
-                        }`}
-                      />
-                      <Tooltip
-                        anchorRef={() => inputRefs.current[index]}
-                        open={supportsKeyboard && activeTipIndex === index}
-                        placement="top"
-                        autoHide
-                        hideDelay={5000}
-                        hoverPauses
-                        onClose={() => setActiveTipIndex(null)}
-                        content={
-                          <div className="flex flex-col gap-3">
-                            <div className="flex items-center gap-3">
-                              <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
-                                ⏎
-                                <span>Enter</span>
-                              </span>
-                              <span className="text-xs text-slate-600 dark:text-slate-300">
-                                {t("builder.shortcuts.enterHint")}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setActiveTipIndex(null)}
-                              className="inline-flex items-center justify-center rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 dark:focus-visible:outline-slate-400"
-                            >
-                              {t("builder.shortcuts.enterHintButton")}
-                            </button>
-                          </div>
-                        }
-                      />
-                      <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
-                        <span>{slice.label.length}/{MAX_LABEL_LENGTH}</span>
-                        {error ? (
-                          <span className="text-rose-500">{t(`builder.sliceError.${error}`, { max: MAX_LABEL_LENGTH })}</span>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSlice(slice.id)}
-                      disabled={slices.length <= MIN_SLICES}
-                      className="self-start rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-rose-300 hover:text-rose-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-400 dark:hover:text-rose-600 dark:disabled:border-slate-700 dark:disabled:text-slate-500"
-                    >
-                      {t("builder.remove")}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={slices.map((slice) => slice.id)} strategy={verticalListSortingStrategy}>
+                <div className="flex flex-col gap-3">
+                  {slices.map((slice, index) => (
+                    <SortableSlice
+                      key={slice.id}
+                      slice={slice}
+                      index={index}
+                      error={sliceErrors[index]}
+                      registerInputRef={(element) => {
+                        inputRefs.current[index] = element || null;
+                      }}
+                      activeTipIndex={activeTipIndex}
+                      supportsKeyboard={supportsKeyboard}
+                      onTooltipClose={() => setActiveTipIndex((prev) => (prev === index ? null : prev))}
+                      onColorChange={handleColorChange}
+                      onLabelChange={handleLabelChange}
+                      onLabelFocus={handleLabelFocus}
+                      onLabelBlur={handleLabelBlur}
+                      onLabelKeyDown={handleLabelKeyDown}
+                      onRemove={handleRemoveSlice}
+                      totalSlices={slices.length}
+                      minSlices={MIN_SLICES}
+                      maxLabelLength={MAX_LABEL_LENGTH}
+                      t={t}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
 
             <div className="flex items-center justify-start pt-2">
               <button
@@ -642,6 +627,144 @@ const BuilderPage = () => {
           </div>
         </section>
       ) : null}
+    </div>
+  );
+};
+
+const SortableSlice = ({
+  slice,
+  index,
+  error,
+  registerInputRef,
+  activeTipIndex,
+  supportsKeyboard,
+  onTooltipClose,
+  onColorChange,
+  onLabelChange,
+  onLabelFocus,
+  onLabelBlur,
+  onLabelKeyDown,
+  onRemove,
+  totalSlices,
+  minSlices,
+  maxLabelLength,
+  t,
+}) => {
+  const inputRef = useRef(null);
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: slice.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? "none" : transition,
+  };
+
+  const dragHandleVisibility = supportsKeyboard
+    ? "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+    : "opacity-100";
+
+  const registerRef = (element) => {
+    inputRef.current = element;
+    registerInputRef(element);
+  };
+
+  return (
+    <div className="group relative" style={style} ref={setNodeRef} {...attributes}>
+      <button
+        type="button"
+        ref={setActivatorNodeRef}
+        {...listeners}
+        className={`drag-handle absolute left-[-2.25rem] top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-1 text-slate-500 shadow transition hover:bg-indigo-100 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-200 ${dragHandleVisibility}`}
+        aria-label={t("builder.reorderHandle", { index: index + 1 })}
+      >
+        <FiMove className="h-4 w-4" aria-hidden />
+      </button>
+      <div
+        className={`flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 shadow-sm transition sm:flex-row sm:items-center dark:border-slate-700 dark:bg-slate-800/60 ${
+          isDragging ? "ring-2 ring-indigo-200 bg-white dark:bg-slate-800" : ""
+        }`}
+      >
+      <div className="flex items-center gap-3 sm:w-32">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-500 shadow">
+          {index + 1}
+        </span>
+        <input
+          type="color"
+          value={slice.color}
+          onChange={(event) => onColorChange(slice.id, event.target.value)}
+          className="h-10 w-10 cursor-pointer rounded-md border border-slate-200 bg-white p-1 shadow-inner dark:border-slate-600"
+          aria-label={t("builder.colorLabel", { index: index + 1 })}
+        />
+      </div>
+
+      <div className="flex-1 space-y-1">
+        <input
+          ref={registerRef}
+          value={slice.label}
+          onChange={(event) => onLabelChange(slice.id, event.target.value)}
+          onFocus={() => onLabelFocus(index)}
+          onBlur={() => onLabelBlur(index)}
+          onKeyDown={onLabelKeyDown(index)}
+          placeholder={t("builder.slicePlaceholder", { index: index + 1 })}
+          className={`w-full rounded-lg border px-3 py-2 text-base shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:bg-slate-900 dark:text-slate-100 ${
+            error ? "border-rose-400 focus:border-rose-400" : "border-slate-200 focus:border-indigo-500 dark:border-slate-700"
+          }`}
+        />
+        <Tooltip
+          anchorRef={inputRef}
+          open={supportsKeyboard && activeTipIndex === index}
+          placement="top"
+          autoHide
+          hideDelay={5000}
+          hoverPauses
+          onClose={onTooltipClose}
+          content={
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
+                  ⏎
+                  <span>Enter</span>
+                </span>
+                <span className="text-xs text-slate-600 dark:text-slate-300">
+                  {t("builder.shortcuts.enterHint")}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onTooltipClose}
+                className="inline-flex items-center justify-center rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 dark:focus-visible:outline-slate-400"
+              >
+                {t("builder.shortcuts.enterHintButton")}
+              </button>
+            </div>
+          }
+        />
+        <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+          <span>
+            {slice.label.length}/{maxLabelLength}
+          </span>
+          {error ? (
+            <span className="text-rose-500">{t(`builder.sliceError.${error}`, { max: maxLabelLength })}</span>
+          ) : null}
+        </div>
+      </div>
+
+        <button
+          type="button"
+          onClick={() => onRemove(slice.id)}
+          disabled={totalSlices <= minSlices}
+          className="self-start rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-rose-300 hover:text-rose-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-400 dark:hover:text-rose-600 dark:disabled:border-slate-700 dark:disabled:text-slate-500"
+        >
+          {t("builder.remove")}
+        </button>
+      </div>
     </div>
   );
 };

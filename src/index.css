@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities;.drag-handle {
+  cursor: grab;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}

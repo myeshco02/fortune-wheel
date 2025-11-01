@@ -2,7 +2,7 @@
 
 Personal web app for creating and sharing custom fortune wheels. Configure your own slices, save the wheel to Firestore, share the generated link/QR, and let everyone spin it in a dedicated view with confetti and animations.
 
-![Fortune Wheel – link](https://fortune-82366.web.app/)
+[Fortune Wheel – link](https://fortune-82366.web.app/)
 
 ## Features
 
